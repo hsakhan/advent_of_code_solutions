@@ -1,3 +1,2 @@
 # advent_of_code_solutions
 My solutions to problems from Advent Of Code. Can be used as self-study material. Viel Spaß! 😊
-loading ...
