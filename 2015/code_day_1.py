@@ -1,6 +1,8 @@
 import time
 import random
 import itertools
+import pathlib
+from rich import print as rprint
 
 # ----------------------------------------------------------------
 # You can find all decorators and stuff in folder named ...
@@ -23,19 +25,18 @@ def exec_time(func):
 
 # Function to generate random input.
 @exec_time
-def generate_input(*, file: str, 
+def generate_input(*, file, 
                    lines: int, 
                    max_len: int) -> int:
     
-    with open(file, "w") as file:
-        _alphabet: str = "()"
-        for _ in itertools.repeat(0, lines):
-            str_len: int = random.randint(1, max_len)
-            tmp: str = ""
-            for _ in itertools.repeat(0, str_len):
-                tmp += _alphabet[random.randint(0, 1)]
-            _txt = tmp + "\n"
-            file.write(_txt)
+    _alphabet: str = "()"
+    for _ in itertools.repeat(0, lines):
+        str_len: int = random.randint(1, max_len)
+        tmp: str = ""
+        for _ in itertools.repeat(0, str_len):
+            tmp += _alphabet[random.randint(0, 1)]
+        _txt = tmp + "\n"
+        file.write(_txt)
     return 0
 
 # Part 1 (a).
@@ -121,54 +122,75 @@ def deliver_quest_bbb(user_input: str) -> int:
 
 # TEST YOURSELF
 
-_input: str | None = None
+rprint("[bold green]-Advent-Of-Code-2015-Day-1-")
 
-path_to_my_file: str = "./2015/day1/input_day_1.txt"           # file where u want to save your test input
+file_path = pathlib.Path("./2015/day1/input_day_1.txt")        # file where u want to save your test input
 lines_to_generate: int  = 10_000                               # how many lines will take ur file
 line_max_length: int = 1_000                                   # how many symbols will take one line 
 
-with open(path_to_my_file, "r") as file:
-    _input = file.read()
+_input: str | None = None
 
-if _input == "":
-    ret, call_time = generate_input(file=path_to_my_file,
-                                    lines=lines_to_generate,
-                                    max_len=line_max_length)
+if not file_path.exists():
+    with open(file_path, "w+") as file:
+        generate_input(file=file,
+                       lines=lines_to_generate,
+                       max_len=line_max_length)
+        rprint(f"[bold green]Test input file was created. (path: {file_path})")
+        file.seek(0)
+        _input = file.read()
+        rprint("[bold blue]Reading test input file.")
+else:
+    with open(file_path, "r") as file:
+        _input = file.read()
+        rprint("[bold blue]Reading test input file.")
 
-print("Start:")
-print(f"{path_to_my_file=}")
+rprint(f"[bold blue]Starting tests.")
 
-summ1, summ2, summ3, summ4, summ5, summ6, summ7 = 0, 0, 0, 0, 0, 0, 0
+_test_1: dict[function, float] = {
+    "deliver_quest_a": 0.0,
+    "deliver_quest_aa": 0.0,
+    "deliver_quest_aaa": 0.0,
+    "deliver_quest_aaaa": 0.0,
+}
+
+_test_2: dict[function, float] = {
+    "deliver_quest_b": 0.0,
+    "deliver_quest_bb": 0.0,
+    "deliver_quest_bbb": 0.0,
+}
+
 for _ in _input.splitlines():
 
     ret, call_time = deliver_quest_a(_)
-    summ1 += call_time
+    _test_1["deliver_quest_a"] += call_time
     
     ret, call_time = deliver_quest_aa(_)
-    summ2 += call_time
+    _test_1["deliver_quest_aa"] += call_time
     
     ret, call_time = deliver_quest_aaa(_)
-    summ3 += call_time
+    _test_1["deliver_quest_aaa"] += call_time
     
     ret, call_time = deliver_quest_aaaa(_)
-    summ4 += call_time
+    _test_1["deliver_quest_aaaa"] += call_time
 
     ret, call_time = deliver_quest_b(_)
-    summ5 += call_time
+    _test_2["deliver_quest_b"] += call_time
     
     ret, call_time = deliver_quest_bb(_)
-    summ6 += call_time
+    _test_2["deliver_quest_bb"] += call_time
     
     ret, call_time = deliver_quest_bbb(_)
-    summ7 += call_time
+    _test_2["deliver_quest_bbb"] += call_time
 
-print("Part 1.")
-print("deliver_quest_a: ", summ1)
-print("deliver_quest_aa: ", summ2)
-print("deliver_quest_aaa: ", summ3)
-print("deliver_quest_aaaa: ", summ4)
+rprint("[bold red]-Part 1.-")
+print("deliver_quest_a - time:", _test_1["deliver_quest_a"])
+print("deliver_quest_aa - time:", _test_1["deliver_quest_aa"])
+print("deliver_quest_aaa - time:", _test_1["deliver_quest_aaa"])
+print("deliver_quest_aaaa - time:", _test_1["deliver_quest_aaaa"])
+rprint(f"[bold yellow]Best time: {min(_test_1.values())}")
 
-print("Part 2.")
-print("deliver_quest_b: ", summ5)
-print("deliver_quest_bb: ", summ6)
-print("deliver_quest_bbb: ", summ7)
+rprint("[bold red]-Part 2.-")
+print("deliver_quest_b - time:", _test_2["deliver_quest_b"])
+print("deliver_quest_bb - time:", _test_2["deliver_quest_bb"])
+print("deliver_quest_bbb - time:", _test_2["deliver_quest_bbb"])
+rprint(f"[bold yellow]Best time: {min(_test_2.values())}")
